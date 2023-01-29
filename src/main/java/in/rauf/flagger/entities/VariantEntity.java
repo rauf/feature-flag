@@ -9,7 +9,7 @@ import lombok.Setter;
 @Table(name = "variant")
 @Getter
 @Setter
-public class Variant extends BaseEntity {
+public class VariantEntity extends BaseEntity {
 
 
     @NotNull
@@ -18,6 +18,6 @@ public class Variant extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "flag_id")
-    private Flag flag;
+    private FlagEntity flag;
 
 }

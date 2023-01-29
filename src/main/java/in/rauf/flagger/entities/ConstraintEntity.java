@@ -9,13 +9,13 @@ import lombok.Setter;
 @Table(name = "constraint")
 @Getter
 @Setter
-public class Constraint extends BaseEntity {
+public class ConstraintEntity extends BaseEntity {
 
     @NotNull
     @Column(name = "value", nullable = false)
     private String value;
 
     @OneToOne(mappedBy = "constraint", optional = false)
-    private Segment segment;
+    private SegmentEntity segment;
 
 }

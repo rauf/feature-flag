@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "flag")
 @Getter
 @Setter
-public class Flag extends BaseEntity {
+public class FlagEntity extends BaseEntity {
 
     @NotNull
     @Column(name = "name", nullable = false)
@@ -29,10 +29,10 @@ public class Flag extends BaseEntity {
 
     @OneToMany(mappedBy = "flag", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = {"flag"}, allowSetters = true)
-    private Set<Variant> variants = new LinkedHashSet<>();
+    private Set<VariantEntity> variants = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "flag", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = {"flag"}, allowSetters = true)
-    private Set<Segment> segments = new LinkedHashSet<>();
+    private Set<SegmentEntity> segments = new LinkedHashSet<>();
 
 }
