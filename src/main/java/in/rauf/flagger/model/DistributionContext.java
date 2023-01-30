@@ -16,8 +16,9 @@ public record DistributionContext(List<String> variantNames, List<Integer> cumul
 
         for (var dist : segment.getDistributions()) {
             variantNames.add(dist.getVariant().getName());
-            cumulativePercentages.add(lastPercent + (dist.getPercent() * MULTIPLIER));
-            lastPercent = cumulativePercentages.get(cumulativePercentages.size() - 1);
+            var percent = lastPercent + (dist.getPercent() * MULTIPLIER);
+            cumulativePercentages.add(percent);
+            lastPercent = percent;
         }
 
         return new DistributionContext(variantNames, cumulativePercentages);

@@ -7,8 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Optional;
+
+import static in.rauf.flagger.service.impl.EvaluationServiceImpl.DEFAULT_VARIANT;
 
 @Service
 public class DistributionServiceImpl implements DistributionService {
@@ -29,33 +30,35 @@ public class DistributionServiceImpl implements DistributionService {
         }
         var crc = HashUtils.getCRC32(id.getBytes());
         var bucketNum = crc % BUCKET_SIZE;
-        int variantIndex = getVariantIndex(context, (int) bucketNum);
+        int variantIndex = getVariantIndex(context, (int) bucketNum + 1);
+        if (variantIndex >= context.cumulativePercentage().size()) {
+            return Optional.of(DEFAULT_VARIANT);
+        }
+
         var variantName = context.variantNames().get(variantIndex);
         if (rolloutPercent == 100) {
             return Optional.of(variantName);
         }
-        boolean res = checkRollout(context, rolloutPercent, bucketNum, variantIndex);
-        if (res) {
+        if (checkRollout(context, rolloutPercent, bucketNum, variantIndex)) {
             return Optional.of(variantName);
         }
         return Optional.empty();
     }
 
-    private boolean checkRollout(DistributionContext distributionContext, Integer rolloutPercent, long bucketNum, int variantIndex) {
-        var min = 0;
-        var max = distributionContext.cumulativePercentage().get(variantIndex);
-        var roll = 0;
-        if (variantIndex != 0) {
-            min = distributionContext.cumulativePercentage().get(variantIndex - 1);
-        }
-        if (max - min - 1 > 0) {
-            roll = max - min - 1;
-        }
+    private boolean checkRollout(DistributionContext context, Integer rolloutPercent, long bucketNum, int variantIndex) {
+        var max = context.cumulativePercentage().get(variantIndex);
+        var min = variantIndex == 0 ? 0 : context.cumulativePercentage().get(variantIndex - 1);
+        var roll = Math.max(max - min, 0);
         return 100 * (bucketNum - min) <= (long) (roll) * rolloutPercent;
     }
 
-    private static int getVariantIndex(DistributionContext distributionContext, int bucketNum) {
-        var variantIndex = Collections.binarySearch(distributionContext.cumulativePercentage(), bucketNum);
-        return variantIndex < 0 ? -variantIndex + 1 : variantIndex;
+    private static int getVariantIndex(DistributionContext context, int bucketNum) {
+        var size = context.cumulativePercentage().size();
+        for (int i = 0; i < size; i++) {
+            if (bucketNum < context.cumulativePercentage().get(i)) {
+                return i;
+            }
+        }
+        return size;
     }
 }

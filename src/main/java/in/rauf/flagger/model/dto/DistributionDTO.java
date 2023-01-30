@@ -1,14 +1,22 @@
 package in.rauf.flagger.model.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 public class DistributionDTO {
-    @NotNull
+    @NotBlank
     private String name;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     private Integer percent;
 
+    @NotBlank
     private String variant;
 
     public String getName() {

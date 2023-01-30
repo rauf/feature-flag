@@ -12,11 +12,9 @@ import java.util.stream.Collectors;
 @Service
 public class FlagServiceImpl implements FlagService {
     private final FlagRepository flagRepository;
-//    private final FlagMapper flagMapper;
 
     public FlagServiceImpl(FlagRepository flagRepository) {
         this.flagRepository = flagRepository;
-//        this.flagMapper = flagMapper;
     }
 
     @Override
@@ -25,7 +23,6 @@ public class FlagServiceImpl implements FlagService {
         var persistedFlagEntity = flagRepository.save(flagEntity);
 
         return null;
-//        return flagMapper.toDto(persistedFlagEntity);
     }
 
     private FlagEntity getEntity(FlagDTO dto) {

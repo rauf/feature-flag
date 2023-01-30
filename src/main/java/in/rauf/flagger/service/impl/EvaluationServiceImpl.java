@@ -65,7 +65,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 
             if (variantOpt.isPresent()) {
                 log.info("segment with id: {} and name: {} matched, returning variant: {}", segment.getId(), segment.getName(), variantOpt.get());
-                result(flagEntity, request.context(), variantOpt.get(), "variant received");
+                return result(flagEntity, request.context(), variantOpt.get(), "variant received");
             }
         }
         return defaultResult(flagEntity, request.context(), "no rollout ");
