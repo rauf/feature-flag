@@ -1,7 +1,7 @@
 package in.rauf.flagger.service;
 
-import in.rauf.flagger.model.EvaluationRequest;
-import in.rauf.flagger.model.EvaluationResult;
+import in.rauf.flagger.model.evaluation.EvaluationRequest;
+import in.rauf.flagger.model.evaluation.EvaluationResult;
 
 public interface EvaluationService {
 

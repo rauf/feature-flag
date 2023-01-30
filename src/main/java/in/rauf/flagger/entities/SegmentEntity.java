@@ -20,8 +20,8 @@ public class SegmentEntity extends BaseEntity {
     private String name;
 
     @NotNull
-    @Column(name = "rank", nullable = false)
-    private Integer rank;
+    @Column(name = "priority", nullable = false)
+    private Integer priority;
 
     @NotNull
     @Column(name = "rollout_percentage", nullable = false)
@@ -31,8 +31,8 @@ public class SegmentEntity extends BaseEntity {
     @JoinColumn(name = "flag_id")
     private FlagEntity flag;
 
-    @OneToOne
-    private ConstraintEntity constraint;
+    @Column(name = "cons")
+    private String constraint;
 
     @OneToMany(mappedBy = "segment", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = {"segment"}, allowSetters = true)

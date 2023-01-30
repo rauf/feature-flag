@@ -20,15 +20,15 @@ public class DistributionEntity extends BaseEntity {
     private Integer percent;
 
     @ManyToOne
-    @JoinColumn(name = "flag_id")
+    @JoinColumn(name = "flag_id", nullable = false)
     private FlagEntity flag;
 
     @ManyToOne
-    @JoinColumn(name = "segment_id")
+    @JoinColumn(name = "segment_id", nullable = false)
     private SegmentEntity segment;
 
     @ManyToOne
-    @JoinColumn(name = "variant_id")
+    @JoinColumn(name = "variant_id", nullable = false)
     private VariantEntity variant;
 
 }
