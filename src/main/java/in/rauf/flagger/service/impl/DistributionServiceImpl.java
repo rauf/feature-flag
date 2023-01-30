@@ -3,16 +3,17 @@ package in.rauf.flagger.service.impl;
 import in.rauf.flagger.model.DistributionContext;
 import in.rauf.flagger.service.DistributionService;
 import in.rauf.flagger.utils.HashUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class DistributionServiceImpl implements DistributionService {
 
+    private static final Logger log = LoggerFactory.getLogger(DistributionServiceImpl.class);
     public final static int BUCKET_SIZE = 10000;
     public final static int MULTIPLIER = BUCKET_SIZE / 100;
 

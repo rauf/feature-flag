@@ -2,13 +2,9 @@ package in.rauf.flagger.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "distribution")
-@Getter
-@Setter
 public class DistributionEntity extends BaseEntity {
 
     @NotNull
@@ -31,4 +27,43 @@ public class DistributionEntity extends BaseEntity {
     @JoinColumn(name = "variant_id", nullable = false)
     private VariantEntity variant;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getPercent() {
+        return percent;
+    }
+
+    public void setPercent(Integer percent) {
+        this.percent = percent;
+    }
+
+    public FlagEntity getFlag() {
+        return flag;
+    }
+
+    public void setFlag(FlagEntity flag) {
+        this.flag = flag;
+    }
+
+    public SegmentEntity getSegment() {
+        return segment;
+    }
+
+    public void setSegment(SegmentEntity segment) {
+        this.segment = segment;
+    }
+
+    public VariantEntity getVariant() {
+        return variant;
+    }
+
+    public void setVariant(VariantEntity variant) {
+        this.variant = variant;
+    }
 }

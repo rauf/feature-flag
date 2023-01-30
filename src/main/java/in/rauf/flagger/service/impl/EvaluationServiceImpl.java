@@ -10,15 +10,17 @@ import in.rauf.flagger.repo.VariantRepository;
 import in.rauf.flagger.service.DistributionService;
 import in.rauf.flagger.service.EvaluationService;
 import in.rauf.flagger.service.RuleEvaluatorService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class EvaluationServiceImpl implements EvaluationService {
+
+    private static final Logger log = LoggerFactory.getLogger(EvaluationServiceImpl.class);
 
     public static final String DEFAULT_VARIANT = "control";
 

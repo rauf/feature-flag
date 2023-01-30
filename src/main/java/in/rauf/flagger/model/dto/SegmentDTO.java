@@ -1,38 +1,26 @@
-package in.rauf.flagger.entities;
+package in.rauf.flagger.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "segment")
-public class SegmentEntity extends BaseEntity {
-
-    @NotNull
-    @Column(name = "name", nullable = false)
+public class SegmentDTO {
+    @NotBlank
     private String name;
 
-    @NotNull
-    @Column(name = "priority", nullable = false)
     private Integer priority;
 
     @NotNull
-    @Column(name = "rollout_percentage", nullable = false)
     private Integer rolloutPercentage;
-
-    @ManyToOne
-    @JoinColumn(name = "flag_id")
-    private FlagEntity flag;
 
     @Column(name = "cons")
     private String constraint;
 
-    @OneToMany(mappedBy = "segment", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties(value = {"segment"}, allowSetters = true)
-    private Set<DistributionEntity> distributions = new LinkedHashSet<>();
+    private Set<DistributionDTO> distributions = new LinkedHashSet<>();
+
 
     public String getName() {
         return name;
@@ -58,14 +46,6 @@ public class SegmentEntity extends BaseEntity {
         this.rolloutPercentage = rolloutPercentage;
     }
 
-    public FlagEntity getFlag() {
-        return flag;
-    }
-
-    public void setFlag(FlagEntity flag) {
-        this.flag = flag;
-    }
-
     public String getConstraint() {
         return constraint;
     }
@@ -74,11 +54,11 @@ public class SegmentEntity extends BaseEntity {
         this.constraint = constraint;
     }
 
-    public Set<DistributionEntity> getDistributions() {
+    public Set<DistributionDTO> getDistributions() {
         return distributions;
     }
 
-    public void setDistributions(Set<DistributionEntity> distributions) {
+    public void setDistributions(Set<DistributionDTO> distributions) {
         this.distributions = distributions;
     }
 }
