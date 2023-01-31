@@ -30,7 +30,7 @@ public class DistributionServiceImpl implements DistributionService {
         }
         var crc = HashUtils.getCRC32(id.getBytes());
         var bucketNum = (int) (crc % BUCKET_SIZE);
-        int variantIndex = getVariantIndex(context, (int) bucketNum + 1);
+        int variantIndex = getVariantIndex(context, bucketNum + 1);
         if (variantIndex >= context.cumulativePercentage().size()) {
             return Optional.of(DEFAULT_VARIANT);
         }
@@ -56,7 +56,7 @@ public class DistributionServiceImpl implements DistributionService {
         var previousVariantPercent = variantIndex == 0 ? 0 : context.cumulativePercentage().get(variantIndex - 1);
         var diff = Math.max(currentVariantPercent - previousVariantPercent - 1, 0);
         var variantShare = bucketNum - previousVariantPercent;
-        return variantShare <= diff * rolloutPercent / 100;
+        return 100 * variantShare <= diff * rolloutPercent;
     }
 
     public static int getVariantIndex(DistributionContext context, int bucketNum) {

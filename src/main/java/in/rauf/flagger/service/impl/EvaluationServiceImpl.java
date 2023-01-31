@@ -43,7 +43,7 @@ public class EvaluationServiceImpl implements EvaluationService {
         var flagOpt = flagRepository.findByName(request.flagName());
         if (flagOpt.isEmpty()) {
             log.info("flag: {} does not exist", request.flagName());
-            return defaultResult(null, request.context(), String.format("flag: %s does not exists", request.flagName()));
+            return defaultResult(null, request.context(), String.format("flag: %s does not exist", request.flagName()));
         }
         var flagEntity = flagOpt.get();
 

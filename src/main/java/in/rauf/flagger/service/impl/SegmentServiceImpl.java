@@ -11,9 +11,11 @@ import in.rauf.flagger.repo.FlagRepository;
 import in.rauf.flagger.repo.SegmentRepository;
 import in.rauf.flagger.repo.VariantRepository;
 import in.rauf.flagger.service.SegmentService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,17 +33,36 @@ public class SegmentServiceImpl implements SegmentService {
     }
 
     @Override
+    @Transactional
     public CreateSegmentResponse save(String flagName, CreateSegmentRequest request) {
         var flagOpt = flagRepository.findByName(flagName);
         if (flagOpt.isEmpty()) {
             throw new BadRequestException(String.format("flag with name: %s not present", flagName));
         }
+        if (!checkPercentSum(request.getSegments())) {
+            throw new BadRequestException("distribution sum > 100");
+        }
+        segmentRepository.deleteByFlag(flagOpt.get()); // delete existing segments for the flag (if any)
+
         var segmentList = new ArrayList<SegmentEntity>();
         for (var seg : request.getSegments()) {
             segmentList.add(getSegmentEntity(flagOpt.get(), seg));
         }
         segmentRepository.saveAll(segmentList);
         return new CreateSegmentResponse(request.getSegments());
+    }
+
+    private boolean checkPercentSum(List<SegmentDTO> segments) {
+        for (var segment : segments) {
+            int sum = 0;
+            for (var dist : segment.getDistributions()) {
+                sum += dist.getPercent();
+            }
+            if (sum > 100) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public SegmentEntity getSegmentEntity(FlagEntity flagEntity, SegmentDTO request) {
