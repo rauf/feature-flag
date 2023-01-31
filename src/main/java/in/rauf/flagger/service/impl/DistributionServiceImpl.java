@@ -29,7 +29,7 @@ public class DistributionServiceImpl implements DistributionService {
             return Optional.empty();
         }
         var crc = HashUtils.getCRC32(id.getBytes());
-        var bucketNum = crc % BUCKET_SIZE;
+        var bucketNum = (int) (crc % BUCKET_SIZE);
         int variantIndex = getVariantIndex(context, (int) bucketNum + 1);
         if (variantIndex >= context.cumulativePercentage().size()) {
             return Optional.of(DEFAULT_VARIANT);
@@ -45,14 +45,21 @@ public class DistributionServiceImpl implements DistributionService {
         return Optional.empty();
     }
 
-    private boolean checkRollout(DistributionContext context, Integer rolloutPercent, long bucketNum, int variantIndex) {
-        var max = context.cumulativePercentage().get(variantIndex);
-        var min = variantIndex == 0 ? 0 : context.cumulativePercentage().get(variantIndex - 1);
-        var roll = Math.max(max - min, 0);
-        return 100 * (bucketNum - min) <= (long) (roll) * rolloutPercent;
+    public static boolean checkRollout(DistributionContext context, Integer rolloutPercent, int bucketNum, int variantIndex) {
+        if (rolloutPercent == 0) {
+            return false;
+        }
+        if (rolloutPercent == 100) {
+            return true;
+        }
+        var currentVariantPercent = context.cumulativePercentage().get(variantIndex);
+        var previousVariantPercent = variantIndex == 0 ? 0 : context.cumulativePercentage().get(variantIndex - 1);
+        var diff = Math.max(currentVariantPercent - previousVariantPercent - 1, 0);
+        var variantShare = bucketNum - previousVariantPercent;
+        return variantShare <= diff * rolloutPercent / 100;
     }
 
-    private static int getVariantIndex(DistributionContext context, int bucketNum) {
+    public static int getVariantIndex(DistributionContext context, int bucketNum) {
         var size = context.cumulativePercentage().size();
         for (int i = 0; i < size; i++) {
             if (bucketNum < context.cumulativePercentage().get(i)) {
