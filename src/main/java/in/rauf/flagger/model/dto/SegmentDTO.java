@@ -3,10 +3,12 @@ package in.rauf.flagger.model.dto;
 import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@Validated
 public class SegmentDTO {
     @NotBlank
     private String name;

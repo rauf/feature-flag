@@ -1,5 +1,6 @@
 package in.rauf.flagger.model.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,6 +10,7 @@ public class CreateSegmentRequest {
 
     @NotEmpty
     @NotNull
+    @Valid
     private List<SegmentDTO> segments;
 
     public List<SegmentDTO> getSegments() {
