@@ -6,7 +6,6 @@ import in.rauf.flagger.model.DistributionContext;
 import in.rauf.flagger.model.evaluation.EvaluationRequest;
 import in.rauf.flagger.model.evaluation.EvaluationResult;
 import in.rauf.flagger.repo.FlagRepository;
-import in.rauf.flagger.repo.VariantRepository;
 import in.rauf.flagger.service.DistributionService;
 import in.rauf.flagger.service.EvaluationService;
 import in.rauf.flagger.service.RuleEvaluatorService;
@@ -14,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,7 +28,7 @@ public class EvaluationServiceImpl implements EvaluationService {
     private final RuleEvaluatorService ruleEvaluatorService;
     private final DistributionService distributionService;
 
-    public EvaluationServiceImpl(FlagRepository flagRepository, VariantRepository variantRepository, RuleEvaluatorService ruleEvaluatorService, DistributionService distributionService) {
+    public EvaluationServiceImpl(FlagRepository flagRepository, RuleEvaluatorService ruleEvaluatorService, DistributionService distributionService) {
         this.flagRepository = flagRepository;
         this.ruleEvaluatorService = ruleEvaluatorService;
         this.distributionService = distributionService;
@@ -37,38 +37,38 @@ public class EvaluationServiceImpl implements EvaluationService {
     @Override
     public EvaluationResult evaluate(EvaluationRequest request) {
         if (request == null) {
-            return defaultResult(null, null, "request is blank");
+            return defaultResult(null, null, "null request");
         }
 
         var flagOpt = flagRepository.findByName(request.flagName());
         if (flagOpt.isEmpty()) {
             log.info("flag: {} does not exist", request.flagName());
-            return defaultResult(null, request.context(), "flag does not exists: " + request.flagName());
+            return defaultResult(null, request.context(), String.format("flag: %s does not exists", request.flagName()));
         }
         var flagEntity = flagOpt.get();
 
         if (!flagEntity.getEnabled()) {
             log.info("flag: {} is not enabled", request.flagName());
-            return defaultResult(null, request.context(), "flag is not enabled: " + request.flagName());
+            return defaultResult(null, request.context(), String.format("flag: %s is not enabled", request.flagName()));
         }
         if (flagEntity.getSegments().isEmpty()) {
             log.info("flag:{} does not have any segments", request.flagName());
-            return defaultResult(null, request.context(), "flag does not have any segments: " + request.flagName());
+            return defaultResult(null, request.context(), String.format("flag: %s does not have any segments", request.flagName()));
         }
-        if (request.id() == null) {
-            request = request.withId(UUID.randomUUID().toString());
-        }
+        var req = request.id() == null ? request.withId(UUID.randomUUID().toString()) : request;
 
-        for (var segment : flagEntity.getSegments()) {
+        var segments = flagEntity.getSegments().stream().sorted(Comparator.comparingInt(SegmentEntity::getPriority)).toList();
+
+        for (var segment : segments) {
             var distributionContext = DistributionContext.from(segment);
-            var variantOpt = evaluateSegment(distributionContext, request, segment);
+            var variantOpt = evaluateSegment(distributionContext, req, segment);
 
             if (variantOpt.isPresent()) {
                 log.info("segment with id: {} and name: {} matched, returning variant: {}", segment.getId(), segment.getName(), variantOpt.get());
-                return result(flagEntity, request.context(), variantOpt.get(), "variant received");
+                return result(flagEntity, req.context(), variantOpt.get());
             }
         }
-        return defaultResult(flagEntity, request.context(), "no rollout ");
+        return defaultResult(flagEntity, req.context(), "no rollout ");
     }
 
     private Optional<String> evaluateSegment(DistributionContext distributionContext, EvaluationRequest request, SegmentEntity segment) {
@@ -81,11 +81,11 @@ public class EvaluationServiceImpl implements EvaluationService {
         return distributionService.getVariant(distributionContext, request.id(), segment.getRolloutPercentage());
     }
 
-    private EvaluationResult result(FlagEntity flagEntity, Object context, String variantName, String msg) {
+    private EvaluationResult result(FlagEntity flagEntity, Object context, String variantName) {
         var flagId = flagEntity == null ? null : flagEntity.getId();
         var flagName = flagEntity == null ? null : flagEntity.getName();
 
-        return new EvaluationResult(context, flagId, flagName, variantName, msg);
+        return new EvaluationResult(context, flagId, flagName, variantName, null);
     }
 
     private EvaluationResult defaultResult(FlagEntity flagEntity, Object context, String msg) {
