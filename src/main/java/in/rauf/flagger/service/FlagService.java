@@ -1,9 +1,10 @@
 package in.rauf.flagger.service;
 
-import in.rauf.flagger.model.dto.FlagDTO;
+import in.rauf.flagger.model.dto.SaveFlagRequestDTO;
+import in.rauf.flagger.model.dto.SaveFlagResponseDTO;
 
 public interface FlagService {
 
-    FlagDTO save(FlagDTO flagDTO);
+    SaveFlagResponseDTO save(SaveFlagRequestDTO saveFlagRequestDTO);
 
 }

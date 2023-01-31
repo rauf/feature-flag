@@ -1,7 +1,8 @@
 package in.rauf.flagger.service;
 
 import in.rauf.flagger.model.dto.CreateSegmentRequest;
+import in.rauf.flagger.model.dto.CreateSegmentResponse;
 
 public interface SegmentService {
-    CreateSegmentRequest save(String flagName, CreateSegmentRequest request);
+    CreateSegmentResponse save(String flagName, CreateSegmentRequest request);
 }

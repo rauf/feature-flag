@@ -1,6 +1,7 @@
 package in.rauf.flagger.controller;
 
-import in.rauf.flagger.model.dto.FlagDTO;
+import in.rauf.flagger.model.dto.SaveFlagRequestDTO;
+import in.rauf.flagger.model.dto.SaveFlagResponseDTO;
 import in.rauf.flagger.service.FlagService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -23,9 +24,9 @@ public class FlagController {
     }
 
     @PostMapping
-    public ResponseEntity<FlagDTO> createFlag(@Valid @RequestBody FlagDTO flagDTO) {
-        log.debug("REST request to save Flag : {}", flagDTO);
-        var result = flagService.save(flagDTO);
+    public ResponseEntity<SaveFlagResponseDTO> createFlag(@Valid @RequestBody SaveFlagRequestDTO saveFlagRequestDTO) {
+        log.debug("REST request to save Flag : {}", saveFlagRequestDTO);
+        var result = flagService.save(saveFlagRequestDTO);
         return ResponseEntity.ok(result);
     }
 }

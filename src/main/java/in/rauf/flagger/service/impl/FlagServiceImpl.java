@@ -2,11 +2,15 @@ package in.rauf.flagger.service.impl;
 
 import in.rauf.flagger.entities.FlagEntity;
 import in.rauf.flagger.entities.VariantEntity;
-import in.rauf.flagger.model.dto.FlagDTO;
+import in.rauf.flagger.model.dto.SaveFlagRequestDTO;
+import in.rauf.flagger.model.dto.SaveFlagResponseDTO;
+import in.rauf.flagger.model.dto.VariantDTO;
+import in.rauf.flagger.model.errors.BadRequestException;
 import in.rauf.flagger.repo.FlagRepository;
 import in.rauf.flagger.service.FlagService;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,14 +22,16 @@ public class FlagServiceImpl implements FlagService {
     }
 
     @Override
-    public FlagDTO save(FlagDTO flagDTO) {
-        FlagEntity flagEntity = getEntity(flagDTO);
+    public SaveFlagResponseDTO save(SaveFlagRequestDTO saveFlagRequestDTO) {
+        if (flagRepository.findByName(saveFlagRequestDTO.getName()).isPresent()) {
+            throw new BadRequestException(String.format("flag: %s already present", saveFlagRequestDTO.getName()));
+        }
+        FlagEntity flagEntity = getEntity(saveFlagRequestDTO);
         var persistedFlagEntity = flagRepository.save(flagEntity);
-
-        return null;
+        return toDto(persistedFlagEntity);
     }
 
-    private FlagEntity getEntity(FlagDTO dto) {
+    private FlagEntity getEntity(SaveFlagRequestDTO dto) {
         var flagEntity = new FlagEntity();
         flagEntity.setName(dto.getName());
         flagEntity.setDescription(dto.getDescription());
@@ -35,5 +41,17 @@ public class FlagServiceImpl implements FlagService {
         flagEntity.setVariants(variantEntities);
         return flagEntity;
     }
+
+    private SaveFlagResponseDTO toDto(FlagEntity flagEntity) {
+
+        var variants = new HashSet<VariantDTO>();
+        for (var v : flagEntity.getVariants()) {
+            variants.add(new VariantDTO(v.getName()));
+        }
+        return new SaveFlagResponseDTO(
+                flagEntity.getId(), flagEntity.getName(), flagEntity.getDescription(), flagEntity.getEnabled(), variants
+        );
+    }
+
 
 }

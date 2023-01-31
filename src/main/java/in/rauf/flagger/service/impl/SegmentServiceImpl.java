@@ -4,7 +4,9 @@ import in.rauf.flagger.entities.DistributionEntity;
 import in.rauf.flagger.entities.FlagEntity;
 import in.rauf.flagger.entities.SegmentEntity;
 import in.rauf.flagger.model.dto.CreateSegmentRequest;
+import in.rauf.flagger.model.dto.CreateSegmentResponse;
 import in.rauf.flagger.model.dto.SegmentDTO;
+import in.rauf.flagger.model.errors.BadRequestException;
 import in.rauf.flagger.repo.FlagRepository;
 import in.rauf.flagger.repo.SegmentRepository;
 import in.rauf.flagger.repo.VariantRepository;
@@ -29,21 +31,20 @@ public class SegmentServiceImpl implements SegmentService {
     }
 
     @Override
-    public CreateSegmentRequest save(String flagName, CreateSegmentRequest request) {
+    public CreateSegmentResponse save(String flagName, CreateSegmentRequest request) {
         var flagOpt = flagRepository.findByName(flagName);
         if (flagOpt.isEmpty()) {
-            throw new RuntimeException("flag does not exist"); // TODO: exception handling, return 400
+            throw new BadRequestException(String.format("flag with name: %s not present", flagName));
         }
         var segmentList = new ArrayList<SegmentEntity>();
         for (var seg : request.getSegments()) {
-            segmentList.add(getEntity(flagOpt.get(), seg));
+            segmentList.add(getSegmentEntity(flagOpt.get(), seg));
         }
-
-        var persisted = segmentRepository.saveAll(segmentList);
-        return null;
+        segmentRepository.saveAll(segmentList);
+        return new CreateSegmentResponse(request.getSegments());
     }
 
-    public SegmentEntity getEntity(FlagEntity flagEntity, SegmentDTO request) {
+    public SegmentEntity getSegmentEntity(FlagEntity flagEntity, SegmentDTO request) {
 
         var segmentEntity = new SegmentEntity();
         segmentEntity.setFlag(flagEntity);
@@ -67,7 +68,7 @@ public class SegmentServiceImpl implements SegmentService {
 
             var variantOpt = variantRepository.findByName(d.getVariant());
             if (variantOpt.isEmpty()) {
-                throw new RuntimeException("variant not present: " + d.getVariant());
+                throw new BadRequestException(String.format("variant with name: %s not present", d.getVariant()));
             }
             de.setVariant(variantOpt.get());
             return de;

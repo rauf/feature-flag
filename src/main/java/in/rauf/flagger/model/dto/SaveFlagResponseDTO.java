@@ -1,24 +1,27 @@
 package in.rauf.flagger.model.dto;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class FlagDTO {
+public class SaveFlagResponseDTO {
 
-    @NotBlank
+    private Long id;
     private String name;
 
     private String description;
 
     private Boolean enabled = true;
 
-    @NotEmpty
-    @Valid
-    private Set<String> variants = new LinkedHashSet<>();
+    private Set<VariantDTO> variants = new LinkedHashSet<>();
+
+
+    public SaveFlagResponseDTO(Long id, String name, String description, Boolean enabled, Set<VariantDTO> variants) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.enabled = enabled;
+        this.variants = variants;
+    }
 
     public String getName() {
         return name;
@@ -44,11 +47,19 @@ public class FlagDTO {
         this.enabled = enabled;
     }
 
-    public Set<String> getVariants() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<VariantDTO> getVariants() {
         return variants;
     }
 
-    public void setVariants(Set<String> variants) {
+    public void setVariants(Set<VariantDTO> variants) {
         this.variants = variants;
     }
 }

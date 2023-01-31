@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RuleEvaluatorServiceImplTest {
 
-    private RuleEvaluatorServiceImpl service = new RuleEvaluatorServiceImpl();
+    private final RuleEvaluatorServiceImpl service = new RuleEvaluatorServiceImpl();
 
     @Test
     void evaluate() {
@@ -21,6 +21,7 @@ class RuleEvaluatorServiceImplTest {
 
         assertFalse(service.evaluate("#userId == 3 ", Map.of("userId", 4)));
         assertTrue(service.evaluate("#userId == 3 ", Map.of("userId", 3)));
+        assertTrue(service.evaluate("#userName == 'abdul'", Map.of("userName", "abdul")));
 
     }
 }
