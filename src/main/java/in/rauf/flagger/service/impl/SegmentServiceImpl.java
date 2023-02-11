@@ -44,10 +44,7 @@ public class SegmentServiceImpl implements SegmentService {
         }
         segmentRepository.deleteByFlag(flagOpt.get()); // delete existing segments for the flag (if any)
 
-        var segmentList = new ArrayList<SegmentEntity>();
-        for (var seg : request.getSegments()) {
-            segmentList.add(getSegmentEntity(flagOpt.get(), seg));
-        }
+        var segmentList = request.getSegments().stream().map(s -> getSegmentEntity(flagOpt.get(), s)).toList();
         segmentRepository.saveAll(segmentList);
         return new CreateSegmentResponse(request.getSegments());
     }
@@ -66,33 +63,20 @@ public class SegmentServiceImpl implements SegmentService {
     }
 
     public SegmentEntity getSegmentEntity(FlagEntity flagEntity, SegmentDTO request) {
+        var segmentEntity = new SegmentEntity(request.getName(), request.getPriority(), request.getRolloutPercentage(),
+                flagEntity, request.getConstraint(), null);
 
-        var segmentEntity = new SegmentEntity();
-        segmentEntity.setFlag(flagEntity);
-        segmentEntity.setName(request.getName());
-        segmentEntity.setPriority(request.getPriority());
-        segmentEntity.setRolloutPercentage(request.getRolloutPercentage());
-        segmentEntity.setConstraint(request.getConstraint());
-
-        var distributionEntities = getDistributionEntities(flagEntity, request, segmentEntity);
-        segmentEntity.setDistributions(distributionEntities);
+        segmentEntity.setDistributions(getDistributionEntities(flagEntity, request, segmentEntity));
         return segmentEntity;
     }
 
     private Set<DistributionEntity> getDistributionEntities(FlagEntity flagEntity, SegmentDTO request, SegmentEntity segmentEntity) {
         return request.getDistributions().stream().map(d -> {
-            var de = new DistributionEntity();
-            de.setSegment(segmentEntity);
-            de.setFlag(flagEntity);
-            de.setName(d.getName());
-            de.setPercent(d.getPercent());
-
             var variantOpt = variantRepository.findByName(d.getVariant());
             if (variantOpt.isEmpty()) {
                 throw new BadRequestException(String.format("variant with name: %s not present", d.getVariant()));
             }
-            de.setVariant(variantOpt.get());
-            return de;
+            return new DistributionEntity(d.getName(), d.getPercent(), flagEntity, segmentEntity, variantOpt.get());
         }).collect(Collectors.toSet());
     }
 

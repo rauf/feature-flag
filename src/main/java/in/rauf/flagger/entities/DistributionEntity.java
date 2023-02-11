@@ -27,6 +27,18 @@ public class DistributionEntity extends BaseEntity {
     @JoinColumn(name = "variant_id", nullable = false)
     private VariantEntity variant;
 
+
+    public DistributionEntity(String name, Integer percent, FlagEntity flag, SegmentEntity segment, VariantEntity variant) {
+        this.name = name;
+        this.percent = percent;
+        this.flag = flag;
+        this.segment = segment;
+        this.variant = variant;
+    }
+
+    public DistributionEntity() {
+    }
+
     public String getName() {
         return name;
     }

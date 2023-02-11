@@ -34,6 +34,19 @@ public class SegmentEntity extends BaseEntity {
     @JsonIgnoreProperties(value = {"segment"}, allowSetters = true)
     private Set<DistributionEntity> distributions = new LinkedHashSet<>();
 
+    public SegmentEntity(String name, Integer priority, Integer rolloutPercentage, FlagEntity flag, String constraint, Set<DistributionEntity> distributions) {
+        this.name = name;
+        this.priority = priority;
+        this.rolloutPercentage = rolloutPercentage;
+        this.flag = flag;
+        this.constraint = constraint;
+        this.distributions = distributions;
+    }
+
+    public SegmentEntity() {
+
+    }
+
     public String getName() {
         return name;
     }
