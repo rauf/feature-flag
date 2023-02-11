@@ -11,7 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/flag")
+@RequestMapping("/api/v1/flags")
+@CrossOrigin(origins = "*")
 public class FlagController {
 
     private static final Logger log = LoggerFactory.getLogger(FlagController.class);
