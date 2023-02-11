@@ -1,5 +1,6 @@
 package in.rauf.flagger.controller;
 
+import in.rauf.flagger.model.dto.FetchFlagsWithSegmentsResponseDTO;
 import in.rauf.flagger.model.dto.SaveFlagRequestDTO;
 import in.rauf.flagger.model.dto.SaveFlagResponseDTO;
 import in.rauf.flagger.service.FlagService;
@@ -7,10 +8,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/flag")
@@ -21,6 +19,13 @@ public class FlagController {
 
     public FlagController(FlagService flagService) {
         this.flagService = flagService;
+    }
+
+    @GetMapping
+    public ResponseEntity<FetchFlagsWithSegmentsResponseDTO> fetchFlags() {
+        log.debug("REST request to fetch all Flags");
+        var result = flagService.findAllWithSegments();
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping

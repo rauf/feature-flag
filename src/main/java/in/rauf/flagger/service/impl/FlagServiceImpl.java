@@ -2,10 +2,12 @@ package in.rauf.flagger.service.impl;
 
 import in.rauf.flagger.entities.FlagEntity;
 import in.rauf.flagger.entities.VariantEntity;
+import in.rauf.flagger.model.dto.FetchFlagsWithSegmentsResponseDTO;
 import in.rauf.flagger.model.dto.SaveFlagRequestDTO;
 import in.rauf.flagger.model.dto.SaveFlagResponseDTO;
 import in.rauf.flagger.model.dto.VariantDTO;
 import in.rauf.flagger.model.errors.BadRequestException;
+import in.rauf.flagger.model.mapper.FlagMapper;
 import in.rauf.flagger.repo.FlagRepository;
 import in.rauf.flagger.service.FlagService;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,11 @@ import java.util.stream.Collectors;
 @Service
 public class FlagServiceImpl implements FlagService {
     private final FlagRepository flagRepository;
+    private final FlagMapper flagMapper;
 
-    public FlagServiceImpl(FlagRepository flagRepository) {
+    public FlagServiceImpl(FlagRepository flagRepository, FlagMapper flagMapper) {
         this.flagRepository = flagRepository;
+        this.flagMapper = flagMapper;
     }
 
     @Override
@@ -29,6 +33,13 @@ public class FlagServiceImpl implements FlagService {
         FlagEntity flagEntity = getEntity(saveFlagRequestDTO);
         var persistedFlagEntity = flagRepository.save(flagEntity);
         return toDto(persistedFlagEntity);
+    }
+
+    @Override
+    public FetchFlagsWithSegmentsResponseDTO findAllWithSegments() {
+        var flags = flagRepository.findAll();
+        var dtos = flagMapper.toDto(flags);
+        return new FetchFlagsWithSegmentsResponseDTO(dtos);
     }
 
     private FlagEntity getEntity(SaveFlagRequestDTO dto) {

@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 public class VariantDTO {
 
     @NotBlank
-    private String name;
+    private final String name;
 
     public VariantDTO(String name) {
         this.name = name;
@@ -17,7 +17,4 @@ public class VariantDTO {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 }
