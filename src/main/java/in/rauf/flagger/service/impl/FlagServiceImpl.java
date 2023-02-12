@@ -2,14 +2,13 @@ package in.rauf.flagger.service.impl;
 
 import in.rauf.flagger.entities.FlagEntity;
 import in.rauf.flagger.entities.VariantEntity;
-import in.rauf.flagger.model.dto.FetchFlagsWithSegmentsResponseDTO;
-import in.rauf.flagger.model.dto.SaveFlagRequestDTO;
-import in.rauf.flagger.model.dto.SaveFlagResponseDTO;
-import in.rauf.flagger.model.dto.VariantDTO;
+import in.rauf.flagger.model.dto.*;
 import in.rauf.flagger.model.errors.BadRequestException;
 import in.rauf.flagger.model.mapper.FlagMapper;
 import in.rauf.flagger.repo.FlagRepository;
 import in.rauf.flagger.service.FlagService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -17,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class FlagServiceImpl implements FlagService {
+
+    private static final Logger log = LoggerFactory.getLogger(FlagServiceImpl.class);
     private final FlagRepository flagRepository;
     private final FlagMapper flagMapper;
 
@@ -26,11 +27,11 @@ public class FlagServiceImpl implements FlagService {
     }
 
     @Override
-    public SaveFlagResponseDTO save(SaveFlagRequestDTO saveFlagRequestDTO) {
-        if (flagRepository.findByName(saveFlagRequestDTO.getName()).isPresent()) {
-            throw new BadRequestException(String.format("flag: %s already present", saveFlagRequestDTO.getName()));
+    public SaveFlagResponseDTO save(FlagRequestDTO flagRequestDTO) {
+        if (flagRepository.findByName(flagRequestDTO.getName()).isPresent()) {
+            throw new BadRequestException(String.format("flag: %s already present", flagRequestDTO.getName()));
         }
-        FlagEntity flagEntity = getEntity(saveFlagRequestDTO);
+        FlagEntity flagEntity = getEntity(flagRequestDTO);
         var persistedFlagEntity = flagRepository.save(flagEntity);
         return toDto(persistedFlagEntity);
     }
@@ -42,7 +43,22 @@ public class FlagServiceImpl implements FlagService {
         return new FetchFlagsWithSegmentsResponseDTO(dtos);
     }
 
-    private FlagEntity getEntity(SaveFlagRequestDTO dto) {
+    @Override
+    public FlagDTO update(String name, FlagRequestDTO flagDTO) {
+        log.debug("Request to save Flag : {}", flagDTO);
+
+        var flagEntityOpt = flagRepository.findByName(name);
+        if (flagEntityOpt.isEmpty()) {
+            throw new BadRequestException(String.format("flag: %s not present", name));
+        }
+        var flagEntity = flagEntityOpt.get();
+        flagEntity.setDescription(flagDTO.getDescription());
+        flagEntity.setEnabled(flagDTO.getEnabled());
+        var persisted = flagRepository.save(flagEntity);
+        return flagMapper.toDto(persisted);
+    }
+
+    private FlagEntity getEntity(FlagRequestDTO dto) {
         var flagEntity = new FlagEntity();
         flagEntity.setName(dto.getName());
         flagEntity.setDescription(dto.getDescription());

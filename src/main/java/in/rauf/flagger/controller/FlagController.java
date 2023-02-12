@@ -1,7 +1,8 @@
 package in.rauf.flagger.controller;
 
 import in.rauf.flagger.model.dto.FetchFlagsWithSegmentsResponseDTO;
-import in.rauf.flagger.model.dto.SaveFlagRequestDTO;
+import in.rauf.flagger.model.dto.FlagDTO;
+import in.rauf.flagger.model.dto.FlagRequestDTO;
 import in.rauf.flagger.model.dto.SaveFlagResponseDTO;
 import in.rauf.flagger.service.FlagService;
 import jakarta.validation.Valid;
@@ -30,9 +31,18 @@ public class FlagController {
     }
 
     @PostMapping
-    public ResponseEntity<SaveFlagResponseDTO> createFlag(@Valid @RequestBody SaveFlagRequestDTO saveFlagRequestDTO) {
-        log.debug("REST request to save Flag : {}", saveFlagRequestDTO);
-        var result = flagService.save(saveFlagRequestDTO);
+    public ResponseEntity<SaveFlagResponseDTO> createFlag(@Valid @RequestBody FlagRequestDTO flagRequestDTO) {
+        log.debug("REST request to save Flag : {}", flagRequestDTO);
+        var result = flagService.save(flagRequestDTO);
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("/{name}")
+    public ResponseEntity<FlagDTO> updateFlag(@PathVariable(value = "name") final String name, @Valid @RequestBody FlagRequestDTO flagRequestDTO) {
+        log.debug("REST request to update Flag : {}, {}", name, flagRequestDTO);
+
+        var result = flagService.update(name, flagRequestDTO);
+        return ResponseEntity.ok(result);
+    }
+
 }

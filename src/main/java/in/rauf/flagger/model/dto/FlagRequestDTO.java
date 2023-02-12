@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class SaveFlagRequestDTO {
+public class FlagRequestDTO {
 
     @NotBlank
     private String name;

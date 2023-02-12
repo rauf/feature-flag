@@ -24,7 +24,7 @@ export const useCreateFlag = () =>
 
 export const useUpdateFlag = () =>
     useMutation(async (req: FlagRequest) => {
-        const res = await axios.put<GetAllFlagsApiResponse>(apiUrl, req);
+        const res = await axios.put<GetAllFlagsApiResponse>(`${apiUrl}/${req.name}`, req);
         await queryClient.invalidateQueries([FETCH_FLAGS]);
         return res.data;
     });
