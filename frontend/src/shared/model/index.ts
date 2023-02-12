@@ -28,4 +28,12 @@ export interface GetAllFlagsApiResponse {
     flags: Flag[];
 }
 
+export interface FlagRequest {
+    name: string;
+    description: string;
+    enabled: boolean;
+    variants: string[];
+}
+
+
 

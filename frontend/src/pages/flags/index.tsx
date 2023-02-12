@@ -1,5 +1,6 @@
 import {useAllFlagsWithSegments} from "../../api/flag";
 import FlagList from "../../components/flag-list";
+import FlagForm from "../../components/flag-form";
 
 export default function FlagPage() {
 
@@ -14,6 +15,7 @@ export default function FlagPage() {
 
     return (
         <div>
+            <FlagForm flag={undefined}/>
             <FlagList flags={res.flags}/>
         </div>
     )
