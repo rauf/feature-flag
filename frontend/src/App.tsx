@@ -6,6 +6,8 @@ import {AppRoutes} from "./components/routes";
 import {QueryClientProvider} from "@tanstack/react-query";
 import queryClient from "./config/client";
 import './config/axios';
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
     return (
@@ -15,6 +17,7 @@ function App() {
                     <AppRoutes/>
                 </ResponsiveDrawer>
             </BrowserRouter>
+            <ToastContainer />
         </QueryClientProvider>
     );
 }

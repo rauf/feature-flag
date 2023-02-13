@@ -1,9 +1,4 @@
-import {
-    InvalidateOptions,
-    InvalidateQueryFilters,
-    QueryClient,
-    QueryKey,
-} from "@tanstack/react-query";
+import {InvalidateOptions, InvalidateQueryFilters, QueryClient, QueryKey,} from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 

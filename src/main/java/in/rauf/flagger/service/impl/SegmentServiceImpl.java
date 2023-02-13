@@ -5,8 +5,10 @@ import in.rauf.flagger.entities.FlagEntity;
 import in.rauf.flagger.entities.SegmentEntity;
 import in.rauf.flagger.model.dto.CreateSegmentRequest;
 import in.rauf.flagger.model.dto.CreateSegmentResponse;
+import in.rauf.flagger.model.dto.GetSegmentsResponse;
 import in.rauf.flagger.model.dto.SegmentDTO;
 import in.rauf.flagger.model.errors.BadRequestException;
+import in.rauf.flagger.model.mapper.SegmentMapper;
 import in.rauf.flagger.repo.FlagRepository;
 import in.rauf.flagger.repo.SegmentRepository;
 import in.rauf.flagger.repo.VariantRepository;
@@ -14,7 +16,6 @@ import in.rauf.flagger.service.SegmentService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,11 +26,13 @@ public class SegmentServiceImpl implements SegmentService {
     private final SegmentRepository segmentRepository;
     private final FlagRepository flagRepository;
     private final VariantRepository variantRepository;
+    private final SegmentMapper segmentMapper;
 
-    public SegmentServiceImpl(SegmentRepository segmentRepository, FlagRepository flagRepository, VariantRepository variantRepository) {
+    public SegmentServiceImpl(SegmentRepository segmentRepository, FlagRepository flagRepository, VariantRepository variantRepository, SegmentMapper segmentMapper) {
         this.segmentRepository = segmentRepository;
         this.flagRepository = flagRepository;
         this.variantRepository = variantRepository;
+        this.segmentMapper = segmentMapper;
     }
 
     @Override
@@ -47,6 +50,18 @@ public class SegmentServiceImpl implements SegmentService {
         var segmentList = request.getSegments().stream().map(s -> getSegmentEntity(flagOpt.get(), s)).toList();
         segmentRepository.saveAll(segmentList);
         return new CreateSegmentResponse(request.getSegments());
+    }
+
+    @Override
+    public GetSegmentsResponse findAll(String flagName) {
+        var flagEntityOpt = flagRepository.findByName(flagName);
+        if (flagEntityOpt.isEmpty()) {
+            throw new BadRequestException(String.format("flag: %s not present", flagName));
+        }
+
+        var segments = segmentRepository.findByFlag(flagEntityOpt.get());
+        var dtos = segmentMapper.toDto(segments);
+        return new GetSegmentsResponse(dtos);
     }
 
     private boolean checkPercentSum(List<SegmentDTO> segments) {
@@ -72,7 +87,7 @@ public class SegmentServiceImpl implements SegmentService {
 
     private Set<DistributionEntity> getDistributionEntities(FlagEntity flagEntity, SegmentDTO request, SegmentEntity segmentEntity) {
         return request.getDistributions().stream().map(d -> {
-            var variantOpt = variantRepository.findByName(d.getVariant());
+            var variantOpt = variantRepository.findByFlagAndName(flagEntity, d.getVariant());
             if (variantOpt.isEmpty()) {
                 throw new BadRequestException(String.format("variant with name: %s not present", d.getVariant()));
             }

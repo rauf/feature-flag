@@ -28,6 +28,11 @@ export interface GetAllFlagsApiResponse {
     flags: Flag[];
 }
 
+export interface GetAllSegmentsApiResponse {
+    segments: Segment[];
+}
+
+
 export interface FlagRequest {
     name: string;
     description: string;

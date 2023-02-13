@@ -1,7 +1,5 @@
 import {TextField} from "@mui/material";
 import {Controller, FieldError} from "react-hook-form";
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
 
 interface FormInputTextProps {
     name: string;

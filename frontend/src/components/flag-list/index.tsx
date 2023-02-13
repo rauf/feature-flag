@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState} from 'react';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -7,7 +8,8 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import {Flag} from "../../shared/model";
 import FlagForm from "../flag-form";
-import {useState} from "react";
+import SegmentForm from "../segment-form";
+import Box from "@mui/material/Box";
 
 interface FlagListProps {
     flags: Flag[]
@@ -29,7 +31,6 @@ export default function FlagList({flags}: FlagListProps) {
 
     return (
         <List
-            sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}
             component="nav"
             aria-labelledby="nested-list-subheader"
         >
@@ -57,18 +58,10 @@ export function FlagListItem({flag, open, setOpen}: FlagListItemProps) {
                 {open ? <ExpandLess/> : <ExpandMore/>}
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
-                {<FlagForm flag={flag}/>}
-                {flag.segments.map(s => (
-                    <div key={s.name}>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{pl: 4}}>
-                                <ListItemText primary={s.name}>
-                                    {s.name}
-                                </ListItemText>
-                            </ListItemButton>
-                        </List>
-                    </div>
-                ))}
+                <Box sx={{display: 'flex'}}>
+                    {<FlagForm flag={flag}/>}
+                    {<SegmentForm flagName={flag.name}/>}
+                </Box>
             </Collapse>
         </div>
     );

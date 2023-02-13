@@ -32,7 +32,7 @@ const styles = {
 
 export default function FlagForm({flag}: FlagFormProps) {
     const isNew = flag === undefined;
-    const {control, formState: {errors}, handleSubmit, reset, getValues} = useForm({
+    const {control, formState: {errors}, handleSubmit, reset} = useForm({
         defaultValues: flag, mode: "all",
     });
     const [open, setOpen] = useState(false);
@@ -40,14 +40,12 @@ export default function FlagForm({flag}: FlagFormProps) {
     const {mutate: updateMutate, isLoading: updateMutationLoading, isSuccess: updateMutationSuccess} = useUpdateFlag();
     const updating = createMutationLoading || updateMutationLoading;
 
-    console.log(`errors: ${JSON.stringify(errors)}`)
-    console.log(`values: ${JSON.stringify(getValues())}`)
-
-    // useEffect(() => {
-    //     if (createMutationSuccess || updateMutationSuccess) {
-    //         navigate(-1);
-    //     }
-    // }, [createMutationSuccess, updateMutationSuccess]);
+    useEffect(() => {
+        if (createMutationSuccess || updateMutationSuccess) {
+            reset();
+            setOpen(false);
+        }
+    }, [createMutationSuccess, updateMutationSuccess, reset]);
 
     const onSubmit = (data: Flag) => {
         const entity = {
@@ -55,14 +53,11 @@ export default function FlagForm({flag}: FlagFormProps) {
             variants: data.variants.map(v => v.name),
             segments: undefined
         };
-        console.log(entity)
         if (isNew) {
             createMutate(entity);
         } else {
             updateMutate(entity)
         }
-        reset();
-        setOpen(false)
     };
 
     return (
@@ -88,7 +83,7 @@ export default function FlagForm({flag}: FlagFormProps) {
                     <Box sx={styles.formField}>
                         <DynamicVariants control={control} disabled={!isNew} required error={errors.variants}/>
                     </Box>
-                    <Button sx={styles.formField} onClick={handleSubmit(onSubmit)} variant={"contained"}>
+                    <Button sx={styles.formField} onClick={handleSubmit(onSubmit)} variant={"contained"} disabled={updating}>
                         Submit
                     </Button>
                 </Box>
