@@ -15,7 +15,7 @@ export default function FlagPage() {
 
     return (
         <div>
-            <FlagForm flag={undefined}/>
+            <FlagForm flagName={undefined}/>
             <FlagList flags={res.flags}/>
         </div>
     )

@@ -7,11 +7,11 @@ import React, {useEffect, useState} from "react";
 import {useCreateSegments, useGetAllSegmentsForFlag} from "../../api/segment";
 import DynamicSegmentInput from "../form/DynamicDistributionsInput";
 import {toast} from "react-toastify";
+import {useGetFlag} from "../../api/flag";
 
 interface SegmentFormProps {
     flagName: string;
 }
-
 
 const styles = {
     boxStyle: {
@@ -47,15 +47,6 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
     const {control, formState: {errors}, handleSubmit, reset} = useForm({
         mode: "all",
     });
-    const {
-        data: segmentsData,
-        isLoading,
-        isError
-    } = useGetAllSegmentsForFlag(flagName, (data: FormData) => reset({...data}));
-
-    const [open, setOpen] = useState(false);
-    const isNew = segmentsData === undefined || segmentsData.segments.length === 0
-
     const {fields, append, remove} = useFieldArray({
         control,
         name: "segments",
@@ -64,9 +55,13 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
         },
     });
 
-    const {mutate, isLoading: mutateLoading, isSuccess: mutateSuccess} = useCreateSegments(() => {
-        toast.error("Error!")
-    });
+    const onGetSegmentsSuccess = (data: FormData) => reset({...data});
+    const {data: segmentsData, isLoading, isError} = useGetAllSegmentsForFlag(flagName, onGetSegmentsSuccess);
+    const [open, setOpen] = useState(false);
+    const isNew = segmentsData === undefined || segmentsData.segments.length === 0
+    const onCreateSegmentsErr = (msg: any) => toast.error("Error!" + msg);
+    const {mutate, isLoading: mutateLoading, isSuccess: mutateSuccess} = useCreateSegments(onCreateSegmentsErr);
+    const {data: flag, isLoading: flagLoading, isError: flagError} = useGetFlag(undefined, flagName);
 
     useEffect(() => {
         if (mutateSuccess) {
@@ -75,7 +70,6 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
         }
     }, [mutateSuccess, reset]);
 
-
     const onSubmit = (data: FormData) => {
         if (!data || !data.segments) {
             return
@@ -83,12 +77,14 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
         mutate({req: {segments: data.segments!}, flagName});
     };
 
-    if (isLoading) {
+    if (isLoading || flagLoading) {
         return <div>Loading</div>
     }
-    if (isError) {
+    if (isError || flagError) {
         return <div>Error</div>
     }
+
+    const variants = flag?.variants?.map(v => v.name)
 
     return (
         <form>
@@ -103,7 +99,6 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
                         <Box key={s.id} sx={styles.segmentBox}>
                             <Box sx={styles.formField}>
                                 <FormInputText control={control} name={`segments[${i}].name`} label={"Segment Name"}
-                                               disabled={!isNew}
                                                required
                                     // error={errors[i]?.name}
                                 />
@@ -128,7 +123,7 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
                                 />
                             </Box>
                             <Box sx={styles.formField}>
-                                <DynamicSegmentInput control={control} required index={i}/>
+                                <DynamicSegmentInput control={control} required index={i} variants={variants}/>
                             </Box>
                             <Button onClick={() => remove(i)}>
                                 Remove Segment
@@ -143,12 +138,12 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
                     >
                         Add a Segment
                     </Button>
-                    <Button sx={styles.formField} onClick={handleSubmit(onSubmit)} variant={"contained"} disabled={mutateLoading}>
+                    <Button sx={styles.formField} onClick={handleSubmit(onSubmit)} variant={"contained"}
+                            disabled={mutateLoading}>
                         Submit
                     </Button>
                 </Box>
             </Modal>
         </form>
     )
-
 }

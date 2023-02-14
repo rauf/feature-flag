@@ -37,6 +37,14 @@ public class FlagController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/{name}")
+    public ResponseEntity<FlagDTO> getFlag(@PathVariable(value = "name") final String name) {
+        log.debug("REST request to get Flag : {}", name);
+
+        var result = flagService.getFlag(name);
+        return ResponseEntity.ok(result);
+    }
+
     @PutMapping("/{name}")
     public ResponseEntity<FlagDTO> updateFlag(@PathVariable(value = "name") final String name, @Valid @RequestBody FlagRequestDTO flagRequestDTO) {
         log.debug("REST request to update Flag : {}, {}", name, flagRequestDTO);

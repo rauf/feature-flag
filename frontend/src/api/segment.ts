@@ -5,7 +5,7 @@ import queryClient from "../config/client";
 
 export const FETCH_SEGMENTS_FOR_FLAG = 'FETCH_SEGMENTS_FOR_FLAG';
 
-const apiUrl = '/api/v1/flag';
+const apiUrl = '/api/v1/flags';
 
 export const useGetAllSegmentsForFlag = (flagName: string, onSuccess: any) =>
     useQuery([FETCH_SEGMENTS_FOR_FLAG, flagName], async () => {

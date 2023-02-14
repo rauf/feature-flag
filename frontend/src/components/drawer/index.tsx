@@ -52,7 +52,7 @@ export default function ResponsiveDrawer(props: Props) {
             <Divider/>
             <List>
                 {navItems.map(({title, navigateTo}, index) => (
-                    <Link to={navigateTo} style={{textDecoration: "none"}}>
+                    <Link to={navigateTo} style={{textDecoration: "none"}} key={title}>
                         <ListItem key={title} disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
@@ -90,7 +90,7 @@ export default function ResponsiveDrawer(props: Props) {
                         <MenuIcon/>
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Responsive drawer
+                        Feature Flag Service
                     </Typography>
                 </Toolbar>
             </AppBar>

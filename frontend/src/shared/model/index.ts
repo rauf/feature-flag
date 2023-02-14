@@ -40,5 +40,8 @@ export interface FlagRequest {
     variants: string[];
 }
 
-
-
+export interface EvaluateRequest {
+    context: object;
+    id: string;
+    flagName: string;
+}

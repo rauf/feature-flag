@@ -58,6 +58,15 @@ public class FlagServiceImpl implements FlagService {
         return flagMapper.toDto(persisted);
     }
 
+    @Override
+    public FlagDTO getFlag(String name) {
+        var flagEntityOpt = flagRepository.findByName(name);
+        if (flagEntityOpt.isEmpty()) {
+            throw new BadRequestException(String.format("flag: %s not present", name));
+        }
+        return flagMapper.toDto(flagEntityOpt.get());
+    }
+
     private FlagEntity getEntity(FlagRequestDTO dto) {
         var flagEntity = new FlagEntity();
         flagEntity.setName(dto.getName());

@@ -19,12 +19,17 @@ public class RuleEvaluatorServiceImpl implements RuleEvaluatorService {
 
     @Override
     public boolean evaluate(String rule, Map<String, Object> context) {
+        if (rule == null || rule.equals("")) {
+            return true;
+        }
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(rule);
         StandardEvaluationContext ruleContext = new StandardEvaluationContext(context);
 
-        for (var entry : context.entrySet()) {
-            ruleContext.setVariable(entry.getKey(), entry.getValue());
+        if (context != null) {
+            for (var entry : context.entrySet()) {
+                ruleContext.setVariable(entry.getKey(), entry.getValue());
+            }
         }
 
         try {

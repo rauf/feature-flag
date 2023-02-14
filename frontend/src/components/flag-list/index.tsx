@@ -59,7 +59,7 @@ export function FlagListItem({flag, open, setOpen}: FlagListItemProps) {
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{display: 'flex'}}>
-                    {<FlagForm flag={flag}/>}
+                    {<FlagForm flagName={flag.name}/>}
                     {<SegmentForm flagName={flag.name}/>}
                 </Box>
             </Collapse>

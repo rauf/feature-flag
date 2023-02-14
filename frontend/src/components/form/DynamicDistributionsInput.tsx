@@ -1,6 +1,6 @@
 import React from "react";
 import {Controller, useFieldArray} from "react-hook-form";
-import {Button, TextField} from "@mui/material";
+import {Button, MenuItem, Select, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 
 interface DynamicSegmentsInputProps {
@@ -8,10 +8,18 @@ interface DynamicSegmentsInputProps {
     disabled?: boolean;
     required?: boolean;
     error?: any;
-    index: number
+    index: number;
+    variants?: string[]
 }
 
-export default function DynamicDistributionsInput({control, disabled = false, required, error, index}: DynamicSegmentsInputProps) {
+export default function DynamicDistributionsInput({
+                                                      control,
+                                                      disabled = false,
+                                                      required,
+                                                      error,
+                                                      index,
+                                                      variants
+                                                  }: DynamicSegmentsInputProps) {
     const {fields, append, remove} = useFieldArray({
         control,
         name: getKey(index),
@@ -24,7 +32,7 @@ export default function DynamicDistributionsInput({control, disabled = false, re
         <div>
             {
                 fields.map((item, i) => (
-                    <Box key={item.id} sx={{display: "inline-flex"}}>
+                    <Box key={item.id} sx={{display: "inline-flex", alignItems: 'center'}}>
                         <Controller
                             control={control}
                             name={`${getNestedKey(index, i)}.name`}
@@ -46,17 +54,19 @@ export default function DynamicDistributionsInput({control, disabled = false, re
                             control={control}
                             name={`${getNestedKey(index, i)}.variant`}
                             render={({field}) => (
-                                <TextField
+                                <Select
                                     {...field}
-                                    disabled={disabled}
+                                    label="Variant"
                                     error={!!error}
-                                    helperText={error && `${error.message}`}
-                                    margin="normal"
                                     required={required}
+                                    id="variant-name"
                                     fullWidth
-                                    id="distributions"
-                                    label={`Variant - ${i + 1}`}
-                                />
+                                    style={{ height: 60 }}
+                                >
+                                    {variants?.map(v => (
+                                        <MenuItem value={v} key={v}>{v}</MenuItem>
+                                    ))}
+                                </Select>
                             )}
                         />
 

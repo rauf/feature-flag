@@ -12,4 +12,6 @@ public interface FlagService {
     FetchFlagsWithSegmentsResponseDTO findAllWithSegments();
 
     FlagDTO update(String name, FlagRequestDTO flagDTO);
+
+    FlagDTO getFlag(String name);
 }
