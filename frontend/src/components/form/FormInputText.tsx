@@ -15,12 +15,14 @@ export const FormInputText = ({name, control, label, disabled = false, required,
         <Controller
             name={name}
             control={control}
-            render={({field: {onChange, value}}) => (
+            rules={{ required: required }}
+            render={({field}) => (
                 <TextField
+                    {...field}
                     required={required}
                     fullWidth
-                    onChange={onChange}
-                    value={value}
+                    onChange={field.onChange}
+                    value={field.value}
                     disabled={disabled}
                     label={label}
                     error={!!error}

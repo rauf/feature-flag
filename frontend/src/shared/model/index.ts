@@ -41,7 +41,7 @@ export interface FlagRequest {
 }
 
 export interface EvaluateRequest {
-    context: object;
+    context: string;
     id: string;
     flagName: string;
 }

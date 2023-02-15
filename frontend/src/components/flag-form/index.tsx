@@ -6,6 +6,7 @@ import {Button, MenuItem, Modal, Select} from "@mui/material";
 import Box from "@mui/material/Box";
 import React, {useEffect, useState} from "react";
 import {useCreateFlag, useGetFlag, useUpdateFlag} from "../../api/flag";
+import {toast} from "react-toastify";
 
 interface FlagFormProps {
     flagName?: string;
@@ -32,8 +33,19 @@ const styles = {
 export default function FlagForm({flagName}: FlagFormProps) {
     const {control, formState: {errors}, handleSubmit, reset} = useForm<Flag>({mode: "all",});
     const [open, setOpen] = useState(false);
-    const {mutate: createMutate, isLoading: createMutationLoading, isSuccess: createMutationSuccess} = useCreateFlag();
-    const {mutate: updateMutate, isLoading: updateMutationLoading, isSuccess: updateMutationSuccess} = useUpdateFlag();
+    const onSuccess = (msg: any) => toast.info("Response: " + JSON.stringify(msg));
+    const onError = (msg: any) => toast.error("Error: " + JSON.stringify(msg));
+
+    const {
+        mutate: createMutate,
+        isLoading: createMutationLoading,
+        isSuccess: createMutationSuccess
+    } = useCreateFlag(onSuccess, onError);
+    const {
+        mutate: updateMutate,
+        isLoading: updateMutationLoading,
+        isSuccess: updateMutationSuccess
+    } = useUpdateFlag(onSuccess, onError);
     const updating = createMutationLoading || updateMutationLoading;
     const {data: flag} = useGetFlag((data: Flag) => reset({...data}), flagName);
     const isNew = flag === undefined;
@@ -71,18 +83,20 @@ export default function FlagForm({flagName}: FlagFormProps) {
                 <Box sx={styles.boxStyle}>
                     <Box sx={styles.formField}>
                         <FormInputText control={control} name={"name"} label={"Flag Name"} disabled={!isNew} required
-                                       // error={errors?.name}
+                            error={errors?.name}
                         />
                     </Box>
                     <Box sx={styles.formField}>
                         <FormInputText control={control} name={"description"} label={"Description"} required
-                                       // error={errors.description}
+                            error={errors.description}
                         />
                     </Box>
                     <Box sx={styles.formField}>
                         <Controller
                             control={control}
                             name={"enabled"}
+                            rules={{ required: true }}
+                            defaultValue={true}
                             render={({field}) => (
                                 <Select
                                     {...field}

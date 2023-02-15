@@ -44,10 +44,10 @@ interface FormData {
 }
 
 export default function SegmentForm({flagName}: SegmentFormProps) {
-    const {control, formState: {errors}, handleSubmit, reset} = useForm({
+    const {control, formState: {errors}, handleSubmit, reset} = useForm<FormData>({
         mode: "all",
     });
-    const {fields, append, remove} = useFieldArray({
+    const {fields, append, remove} = useFieldArray<FormData>({
         control,
         name: "segments",
         rules: {
@@ -85,6 +85,7 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
     }
 
     const variants = flag?.variants?.map(v => v.name)
+    console.log(`errors: ${JSON.stringify(errors)}`)
 
     return (
         <form>
@@ -100,26 +101,25 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
                             <Box sx={styles.formField}>
                                 <FormInputText control={control} name={`segments[${i}].name`} label={"Segment Name"}
                                                required
-                                    // error={errors[i]?.name}
+                                               error={errors?.segments?.[i]?.name}
                                 />
                             </Box>
                             <Box sx={styles.formField}>
                                 <FormInputText control={control} name={`segments[${i}].priority`} label={"Priority"}
                                                required
-                                    // error={errors[i]?.priority}
+                                               error={errors?.segments?.[i]?.priority}
                                 />
                             </Box>
                             <Box sx={styles.formField}>
                                 <FormInputText control={control} name={`segments[${i}].rolloutPercentage`}
                                                label={"Rollout Percentage"}
                                                required
-                                    // error={errors[i]?.rolloutPercentage}
+                                               error={errors?.segments?.[i]?.rolloutPercentage}
                                 />
                             </Box>
                             <Box sx={styles.formField}>
                                 <FormInputText control={control} name={`segments[${i}].constraint`} label={"Constraint"}
-                                               required
-                                    // error={errors[i]?.constraint}
+                                               error={errors?.segments?.[i]?.constraint}
                                 />
                             </Box>
                             <Box sx={styles.formField}>
@@ -134,7 +134,7 @@ export default function SegmentForm({flagName}: SegmentFormProps) {
                     <Button
                         variant="outlined"
                         fullWidth
-                        onClick={() => append({name: ""})}
+                        onClick={() => append({} as Segment)}
                     >
                         Add a Segment
                     </Button>

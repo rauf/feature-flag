@@ -2,6 +2,7 @@ import React from "react";
 import {Controller, useFieldArray} from "react-hook-form";
 import {Button, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
+import {FormInputText} from "./FormInputText";
 
 interface DynamicVariantsInputProps {
     control: any;
@@ -23,24 +24,13 @@ export default function DynamicVariantsInput({control, disabled = false, require
         <div>
             {
                 fields.map((item, i) => (
-                    <Box key={item.id} sx={{display: "inline-flex"}}>
-                        <Controller
-                            control={control}
-                            name={`variants[${i}].name`}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    disabled={disabled}
-                                    error={!!error}
-                                    helperText={error && `${error.message}`}
-                                    margin="normal"
-                                    required={required}
-                                    fullWidth
-                                    id="variants"
-                                    label={`Variant - ${i + 1}`}
-                                />
-                            )}
+                    <Box key={item.id} sx={{display: "inline-flex", marginTop: '1rem'}}>
+                        <FormInputText control={control}
+                                       name={`variants[${i}].name`}
+                                       label={"Variant"}
+                                       required
                         />
+
                         {
                             !disabled && <div onClick={() => remove(i)}>
                                 X

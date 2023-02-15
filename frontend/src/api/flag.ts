@@ -23,18 +23,24 @@ export const useGetFlag = (onSuccess: any, name?: string) =>
         enabled: !!name
     });
 
-export const useCreateFlag = () =>
+export const useCreateFlag = (onSuccess: any, onError: any) =>
     useMutation(async (req: FlagRequest) => {
         const res = await axios.post<GetAllFlagsApiResponse>(apiUrl, req);
         await queryClient.invalidateQueries([FETCH_FLAGS]);
         return res.data;
+    }, {
+        onSuccess,
+        onError
     });
 
-export const useUpdateFlag = () =>
+export const useUpdateFlag = (onSuccess: any, onError: any) =>
     useMutation(async (req: FlagRequest) => {
         const res = await axios.put<GetAllFlagsApiResponse>(`${apiUrl}/${req.name}`, req);
         await queryClient.invalidateQueries([FETCH_FLAGS]);
         await queryClient.invalidateQueries([FETCH_FLAG, req.name]);
         return res.data;
+    }, {
+        onSuccess,
+        onError
     });
 

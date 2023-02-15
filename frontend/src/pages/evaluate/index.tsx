@@ -24,7 +24,13 @@ export default function EvaluatePage() {
     const onEvaluateSuccess = (msg: any) => toast.info("Result!" + JSON.stringify(msg));
     const {mutate, isLoading} = useEvaluate(onEvaluateSuccess);
     const onSubmit = (data: EvaluateRequest) => {
-        mutate(data);
+        const d = {
+            ...data,
+        }
+        if (data.context) {
+            d.context = JSON.parse(data.context)
+        }
+        mutate(d);
     };
 
     return (
